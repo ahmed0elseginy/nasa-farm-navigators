@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { 
@@ -10,7 +11,8 @@ import {
   Box, 
   BookOpen, 
   Info,
-  Satellite
+  Satellite,
+  X
 } from "lucide-react"
 
 const navigation = [
@@ -24,6 +26,7 @@ const navigation = [
 
 export function Navigation() {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
@@ -66,14 +69,51 @@ export function Navigation() {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
               <span className="sr-only">Open menu</span>
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </Button>
           </div>
         </div>
+
+        {/* Mobile menu dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+              {navigation.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium transition-colors",
+                      isActive 
+                        ? "bg-green-600 text-white" 
+                        : "text-gray-700 hover:bg-gray-100 hover:text-green-600"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )
